@@ -1,0 +1,651 @@
+/* ─────────────────────────────────────────────────────────────────
+   SCHERE, STEIN, BLUFF  –  Stylesheet
+   ─────────────────────────────────────────────────────────────────*/
+
+/* ── Design-Tokens ─────────────────────────────────────────────── */
+:root {
+  --clr-bg:          #0d1117;
+  --clr-surface:     #161b22;
+  --clr-surface2:    #1c2333;
+  --clr-border:      #30363d;
+  --clr-border-glow: #58a6ff44;
+
+  --clr-accent:      #58a6ff;
+  --clr-accent2:     #bc8cff;
+  --clr-success:     #3fb950;
+  --clr-danger:      #f85149;
+  --clr-warn:        #e3b341;
+
+  --clr-text:        #e6edf3;
+  --clr-muted:       #8b949e;
+
+  /* Card types */
+  --clr-scissors:    hsl(355, 80%, 62%);
+  --clr-stone:       hsl(210, 14%, 55%);
+  --clr-paper:       hsl(200, 70%, 60%);
+
+  --radius-card:   14px;
+  --radius-slot:   12px;
+  --radius-ui:     10px;
+
+  --shadow-card:   0 4px 20px #00000066;
+  --shadow-glow:   0 0 20px #58a6ff33;
+
+  --font:          'Outfit', system-ui, sans-serif;
+  --transition:    220ms ease;
+}
+
+/* ── Reset & Base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  overflow: hidden;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; }
+
+/* ── Utility ─────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Overlay ────────────────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: #0d1117cc;
+  backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  animation: fadeIn 400ms ease;
+}
+
+/* ── Mode Selection ──────────────────────────────────────────────── */
+.mode-box {
+  text-align: center;
+  animation: popIn 400ms cubic-bezier(.34,1.56,.64,1);
+}
+
+.mode-title-icon { font-size: 64px; margin-bottom: 12px; }
+.mode-box h1     { font-size: 2.4rem; font-weight: 800; margin-bottom: 6px; }
+.mode-subtitle   { color: var(--clr-muted); font-size: 1.1rem; margin-bottom: 36px; }
+
+.mode-cards {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mode-card {
+  background: linear-gradient(145deg, var(--clr-surface2), var(--clr-surface));
+  border: 1px solid var(--clr-border);
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  width: 240px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  color: var(--clr-text);
+}
+.mode-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 12px 40px #00000088, var(--shadow-glow);
+  border-color: var(--clr-accent);
+}
+.mode-icon { font-size: 3rem; }
+.mode-name { font-size: 1.2rem; font-weight: 700; }
+.mode-desc { font-size: 0.78rem; color: var(--clr-muted); line-height: 1.4; }
+
+/* ── Victory Box ────────────────────────────────────────────────── */
+.victory-box {
+  background: linear-gradient(145deg, var(--clr-surface2), var(--clr-surface));
+  border: 1px solid var(--clr-border);
+  border-radius: 24px;
+  padding: 48px 56px;
+  text-align: center;
+  box-shadow: var(--shadow-card), 0 0 60px #bc8cff22;
+  animation: popIn 400ms cubic-bezier(.34,1.56,.64,1);
+}
+
+.victory-icon { font-size: 72px; margin-bottom: 16px; }
+.victory-box h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; }
+.victory-box p  { color: var(--clr-muted); font-size: 1.1rem; margin-bottom: 32px; }
+
+.victory-buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Back Button ─────────────────────────────────────────────────── */
+.btn-back {
+  background: none;
+  color: var(--clr-muted);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: color var(--transition), background var(--transition);
+  line-height: 1;
+}
+.btn-back:hover { color: var(--clr-text); background: #ffffff11; }
+
+/* ══════════════════════════════════════════════════════════════════
+   BLUFF MODE
+   ══════════════════════════════════════════════════════════════════*/
+
+/* ── Game Container ─────────────────────────────────────────────── */
+#game-container {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  height: 100vh;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px 8px;
+  gap: 6px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+#match-header, #classic-header {
+  padding: 14px 20px 10px;
+  background: var(--clr-surface);
+  border-bottom: 1px solid var(--clr-border);
+  border-radius: 0 0 var(--radius-ui) var(--radius-ui);
+  text-align: center;
+}
+
+.match-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.score-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+}
+.bot-score { flex-direction: row-reverse; }
+
+.score-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--clr-muted);
+}
+
+.score-pips {
+  display: flex;
+  gap: 6px;
+}
+.pip {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-border);
+  background: transparent;
+  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.pip.filled-player { background: var(--clr-accent); border-color: var(--clr-accent); box-shadow: 0 0 8px var(--clr-accent); }
+.pip.filled-bot    { background: var(--clr-danger);  border-color: var(--clr-danger);  box-shadow: 0 0 8px var(--clr-danger); }
+
+.match-title {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative;
+}
+.match-title .btn-back {
+  position: absolute;
+  left: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.game-name { font-size: 1.1rem; font-weight: 700; letter-spacing: .02em; }
+.best-of   { font-size: 0.72rem; color: var(--clr-muted); text-transform: uppercase; letter-spacing: .1em; }
+
+.partie-info {
+  margin-top: 6px;
+  font-size: 0.78rem;
+  color: var(--clr-muted);
+}
+.partie-info span { color: var(--clr-text); font-weight: 600; }
+
+/* ── Area Labels ─────────────────────────────────────────────────── */
+.area-label, .arena-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--clr-muted);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+/* ── Bot Area ────────────────────────────────────────────────────── */
+#bot-area, #classic-bot-area {
+  padding: 6px 0 0;
+}
+
+/* ── Arena ───────────────────────────────────────────────────────── */
+#arena {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.duels {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ── Duel Slot ───────────────────────────────────────────────────── */
+.duel-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: calc((100% - 50px) / 6);
+  max-width: 140px;
+}
+
+.slot-number {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--clr-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+.slot-card-wrapper {
+  width: 100%;
+  aspect-ratio: 2/3;
+  position: relative;
+}
+
+/* Card placeholder (empty slot) */
+.card-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--clr-border);
+  border-radius: var(--radius-card);
+  background: var(--clr-surface);
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+.card-placeholder.droppable {
+  border-color: var(--clr-accent);
+  background: #58a6ff11;
+  box-shadow: 0 0 0 1px #58a6ff44 inset;
+}
+
+/* ── Duel result badge ────────────────────────────────────────────── */
+.duel-result {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 100px;
+  min-width: 36px;
+  text-align: center;
+}
+.duel-result.win  { background: #3fb95022; color: var(--clr-success); border: 1px solid #3fb95066; }
+.duel-result.loss { background: #f8514922; color: var(--clr-danger);  border: 1px solid #f8514966; }
+.duel-result.draw { background: #e3b34122; color: var(--clr-warn);    border: 1px solid #e3b34166; }
+.duel-result.empty { visibility: hidden; }
+
+/* ── Hand areas ──────────────────────────────────────────────────── */
+.hand {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+#player-area, #classic-player-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SHARED CARD STYLES
+   ══════════════════════════════════════════════════════════════════*/
+
+.card {
+  --card-h: 120px;
+  width: calc(var(--card-h) * 2 / 3);
+  height: var(--card-h);
+  border-radius: var(--radius-card);
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 400ms cubic-bezier(.34,1.1,.64,1), box-shadow var(--transition), filter var(--transition);
+  flex-shrink: 0;
+}
+
+/* On arena, cards are a bit smaller */
+.duel-slot .card {
+  --card-h: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.card-face, .card-back {
+  position: absolute; inset: 0;
+  border-radius: var(--radius-card);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-card);
+}
+
+/* FRONT */
+.card-face {
+  background: linear-gradient(145deg, var(--clr-surface2), var(--clr-surface));
+  border: 1px solid var(--clr-border);
+}
+
+/* Type-specific accent strip */
+.card-face::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+.card[data-type="scissors"] .card-face::before { background: var(--clr-scissors); }
+.card[data-type="stone"]    .card-face::before { background: var(--clr-stone); }
+.card[data-type="paper"]    .card-face::before { background: var(--clr-paper); }
+
+.card-emoji {
+  font-size: 2.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px #0008);
+}
+/* Smaller emoji on the bluff arena */
+.duel-slot .card-emoji { font-size: 1.6rem; }
+
+.card-name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--clr-muted);
+}
+.duel-slot .card-name { font-size: 0.58rem; }
+
+/* BACK */
+.card-back {
+  background: linear-gradient(135deg, #1a2035 0%, #0f1624 50%, #1a2035 100%);
+  border: 1px solid var(--clr-border);
+  overflow: hidden;
+}
+.card-back::after {
+  content: '?';
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #ffffff18;
+}
+.duel-slot .card-back::after { font-size: 1.8rem; }
+
+/* Pattern on back */
+.card-back::before {
+  content: '';
+  position: absolute; inset: 6px;
+  border-radius: 8px;
+  border: 1.5px solid #ffffff10;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 4px,
+    #ffffff05 4px,
+    #ffffff05 8px
+  );
+}
+
+/* ── Card States ──────────────────────────────────────────────────── */
+
+/* Face-up: show front, hide back */
+.card.face-up  .card-face { display: flex; }
+.card.face-up  .card-back { display: none; }
+
+/* Face-down: hide front completely, show back */
+.card.face-down .card-face { display: none; }
+.card.face-down .card-back { display: flex; }
+
+/* Hover on player hand */
+.hand .card:hover:not(.disabled):not(.selected) {
+  transform: translateY(-12px) scale(1.04);
+  box-shadow: 0 12px 32px #00000088, 0 0 20px #58a6ff33;
+}
+
+/* Selected card in hand */
+.card.selected {
+  transform: translateY(-18px) scale(1.06);
+  box-shadow: 0 16px 36px #00000099, 0 0 28px var(--clr-accent);
+  border-color: var(--clr-accent) !important;
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 2px;
+}
+
+/* Swap-selected card on arena */
+.card.swap-selected {
+  outline: 2px solid var(--clr-accent2);
+  outline-offset: 3px;
+  box-shadow: 0 0 20px var(--clr-accent2);
+}
+
+/* Disabled (not clickable) */
+.card.disabled { cursor: default; filter: brightness(0.6); }
+
+/* Result highlight */
+.card.result-win  .card-face { border-color: var(--clr-success); box-shadow: 0 0 16px #3fb95044; }
+.card.result-loss .card-face { border-color: var(--clr-danger);  box-shadow: 0 0 16px #f8514944; }
+.card.result-draw .card-face { border-color: var(--clr-warn);    box-shadow: 0 0 16px #e3b34144; }
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.btn {
+  padding: 10px 24px;
+  border-radius: var(--radius-ui);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  transition: transform var(--transition), box-shadow var(--transition), filter var(--transition);
+}
+.btn:hover  { transform: translateY(-2px); filter: brightness(1.1); }
+.btn:active { transform: translateY(0);    filter: brightness(0.95); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #2d6cdf, #58a6ff);
+  color: #fff;
+  box-shadow: 0 4px 16px #58a6ff44;
+}
+.btn-secondary {
+  background: var(--clr-surface2);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+.btn-danger {
+  background: linear-gradient(135deg, #a02020, #f85149);
+  color: #fff;
+  box-shadow: 0 4px 16px #f8514944;
+}
+
+/* ── Hint Bar (shared shape) ─────────────────────────────────────── */
+#hint-bar, #classic-hint-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-ui);
+  font-size: 0.9rem;
+  min-height: 54px;
+}
+
+#hint-icon, #classic-hint-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+#hint-text, #classic-hint-text {
+  flex: 1;
+  color: var(--clr-text);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+#hint-bar .btn, #classic-hint-bar .btn { flex-shrink: 0; white-space: nowrap; }
+
+/* ── Supply phase ────────────────────────────────────────────────── */
+.discard-selecting .card:not(.disabled):hover {
+  outline: 2px dashed var(--clr-danger);
+  outline-offset: 2px;
+}
+.card.discard-marked {
+  outline: 2px solid var(--clr-danger);
+  outline-offset: 2px;
+  filter: brightness(0.75);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CLASSIC MODE
+   ══════════════════════════════════════════════════════════════════*/
+
+#classic-container {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  height: 100vh;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 16px 8px;
+  gap: 6px;
+}
+
+/* ── Classic Header ──────────────────────────────────────────────── */
+.classic-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.classic-score-side {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 120px;
+}
+.classic-score-side.bot-side { flex-direction: row-reverse; }
+
+.classic-score-num {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  min-width: 30px;
+  text-align: center;
+}
+.player-side .classic-score-num { color: var(--clr-accent); }
+.bot-side    .classic-score-num { color: var(--clr-danger); }
+
+/* ── Classic Arena ───────────────────────────────────────────────── */
+#classic-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.classic-duel {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.classic-duel-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.classic-side-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--clr-muted);
+}
+
+.classic-card-slot {
+  width: 110px;
+  height: 165px;
+  position: relative;
+}
+
+.classic-card-slot .card {
+  --card-h: 165px;
+  width: 110px;
+  position: absolute; inset: 0;
+}
+
+.classic-card-slot .card-emoji { font-size: 2.6rem; }
+.classic-card-slot .card-name  { font-size: 0.75rem; }
+.classic-card-slot .card-back::after { font-size: 2.4rem; }
+
+.classic-card-slot .card-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--clr-border);
+  border-radius: var(--radius-card);
+  background: var(--clr-surface);
+}
+
+.classic-vs {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--clr-muted);
+  letter-spacing: .08em;
+  padding: 0 8px;
+  margin-top: 20px; /* offset for label */
+}
+
+.classic-vs.result-win  { color: var(--clr-success); }
+.classic-vs.result-loss { color: var(--clr-danger); }
+.classic-vs.result-draw { color: var(--clr-warn); }
+
+/* ── Animations ──────────────────────────────────────────────────── */
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes popIn   { from { opacity: 0; transform: scale(.85) } to { opacity: 1; transform: scale(1) } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes pulse   { 0%,100% { opacity: 1 } 50% { opacity: .55 } }
+@keyframes shake   {
+  0%,100% { transform: translateX(0) }
+  20%     { transform: translateX(-6px) }
+  40%     { transform: translateX(6px) }
+  60%     { transform: translateX(-4px) }
+  80%     { transform: translateX(4px) }
+}
+@keyframes cardDeal {
+  from { opacity: 0; transform: translateY(-30px) scale(0.85) }
+  to   { opacity: 1; transform: translateY(0) scale(1) }
+}
+
+/* Only animate when explicitly marked for dealing */
+.card.dealing { animation: cardDeal 350ms ease backwards; }
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .card { --card-h: 88px; }
+  .card-emoji      { font-size: 1.6rem; }
+  .duel-slot .card-emoji { font-size: 1.1rem; }
+  .duels { gap: 6px; }
+  .hand  { gap: 6px; }
+  #match-header, #classic-header { padding: 10px 12px 8px; }
+  .game-name { font-size: 0.95rem; }
+  .victory-box { padding: 32px 28px; }
+  .mode-box h1 { font-size: 1.6rem; }
+  .mode-cards { flex-direction: column; align-items: center; }
+  .classic-card-slot { width: 80px; height: 120px; }
+  .classic-card-slot .card { --card-h: 120px; width: 80px; }
+  .classic-duel { gap: 16px; }
+}

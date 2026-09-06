@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schere, Stein, Bluff</title>
+  <meta name="description" content="Rundenbasiertes Kartenspiel: Schere, Stein, Bluff – Du gegen den Computer!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── MODUS-AUSWAHL ────────────────────────────────────────────── -->
+  <div id="mode-screen" class="overlay">
+    <div class="mode-box">
+      <div class="mode-title-icon">🎴</div>
+      <h1>Schere, Stein, Bluff</h1>
+      <p class="mode-subtitle">Wähle einen Spielmodus</p>
+      <div class="mode-cards">
+        <button class="mode-card" data-mode="bluff">
+          <span class="mode-icon">🃏</span>
+          <span class="mode-name">Bluff-Modus</span>
+          <span class="mode-desc">6 Duelle mit Tauschen &amp; Bluffen · Best of 5</span>
+        </button>
+        <button class="mode-card" data-mode="classic">
+          <span class="mode-icon">⚔️</span>
+          <span class="mode-name">Klassisch</span>
+          <span class="mode-desc">Runde für Runde · Wer holt mehr Punkte?</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SIEGSCHIRM ───────────────────────────────────────────────── -->
+  <div id="victory-screen" class="overlay hidden">
+    <div class="victory-box">
+      <div class="victory-icon" id="victory-icon">🏆</div>
+      <h1 id="victory-title">Glückwunsch!</h1>
+      <p id="victory-subtitle">Du hast das Match gewonnen!</p>
+      <div class="victory-buttons">
+        <button id="btn-new-match" class="btn btn-primary">Nochmal spielen</button>
+        <button id="btn-back-to-menu" class="btn btn-secondary">Zurück zum Menü</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BLUFF-MODUS ──────────────────────────────────────────────── -->
+  <div id="game-container" class="hidden">
+
+    <header id="match-header">
+      <div class="match-score">
+        <div class="score-block player-score">
+          <span class="score-label">Du</span>
+          <div class="score-pips" id="score-pips-player"></div>
+        </div>
+        <div class="match-title">
+          <button class="btn-back" id="bluff-back" title="Zurück zum Menü">←</button>
+          <span class="game-name">Bluff-Modus</span>
+          <span class="best-of">Best of 5</span>
+        </div>
+        <div class="score-block bot-score">
+          <div class="score-pips" id="score-pips-bot"></div>
+          <span class="score-label">Bot</span>
+        </div>
+      </div>
+      <div class="partie-info">
+        Partie <span id="partie-number">1</span> &nbsp;·&nbsp;
+        <span id="starter-info">Du fängst an</span>
+      </div>
+    </header>
+
+    <section id="bot-area">
+      <div class="area-label">Gegner</div>
+      <div class="hand" id="bot-hand"></div>
+    </section>
+
+    <section id="arena">
+      <div class="arena-label">Spielfeld</div>
+      <div class="duels" id="duel-slots"></div>
+    </section>
+
+    <section id="player-area">
+      <div class="hand" id="player-hand"></div>
+    </section>
+
+    <footer id="hint-bar">
+      <div id="hint-icon">💡</div>
+      <p id="hint-text">Das Spiel wird vorbereitet …</p>
+      <button id="btn-confirm" class="btn btn-primary hidden">Weiter</button>
+    </footer>
+
+  </div>
+
+  <!-- ── KLASSISCHER MODUS ────────────────────────────────────────── -->
+  <div id="classic-container" class="hidden">
+
+    <header id="classic-header">
+      <div class="classic-score-row">
+        <div class="classic-score-side player-side">
+          <span class="score-label">Du</span>
+          <span class="classic-score-num" id="classic-player-score">0</span>
+        </div>
+        <div class="match-title">
+          <button class="btn-back" id="classic-back" title="Zurück zum Menü">←</button>
+          <span class="game-name">Klassisch</span>
+          <span class="best-of">
+            Runde <span id="classic-round">1</span>/<span id="classic-total-rounds">9</span>
+          </span>
+        </div>
+        <div class="classic-score-side bot-side">
+          <span class="classic-score-num" id="classic-bot-score">0</span>
+          <span class="score-label">Bot</span>
+        </div>
+      </div>
+      <div class="partie-info">
+        Stapel: <span id="classic-deck-count">12</span> Karten
+      </div>
+    </header>
+
+    <section id="classic-bot-area">
+      <div class="area-label">Gegner</div>
+      <div class="hand" id="classic-bot-hand"></div>
+    </section>
+
+    <section id="classic-arena">
+      <div class="classic-duel">
+        <div class="classic-duel-side">
+          <div class="classic-side-label">Bot</div>
+          <div class="classic-card-slot" id="classic-bot-slot"></div>
+        </div>
+        <div class="classic-vs" id="classic-vs-label">VS</div>
+        <div class="classic-duel-side">
+          <div class="classic-side-label">Du</div>
+          <div class="classic-card-slot" id="classic-player-slot"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="classic-player-area">
+      <div class="hand" id="classic-player-hand"></div>
+    </section>
+
+    <footer id="classic-hint-bar">
+      <div id="classic-hint-icon">💡</div>
+      <p id="classic-hint-text">Wähle eine Karte aus deiner Hand.</p>
+      <button id="classic-btn-confirm" class="btn btn-primary hidden">Weiter</button>
+    </footer>
+
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
