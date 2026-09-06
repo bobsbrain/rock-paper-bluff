@@ -634,18 +634,185 @@ button { font-family: inherit; cursor: pointer; border: none; }
 .card.dealing { animation: cardDeal 350ms ease backwards; }
 
 /* ── Responsive ──────────────────────────────────────────────────── */
+
+/* ── Tablet / small screens ─────────────────────────────────────── */
 @media (max-width: 700px) {
-  .card { --card-h: 88px; }
-  .card-emoji      { font-size: 1.6rem; }
-  .duel-slot .card-emoji { font-size: 1.1rem; }
-  .duels { gap: 6px; }
-  .hand  { gap: 6px; }
-  #match-header, #classic-header { padding: 10px 12px 8px; }
+  html, body { overflow-y: auto; }
+
+  /* Use dynamic viewport height for mobile browser chrome */
+  #game-container,
+  #classic-container { height: 100dvh; padding: 0 10px 6px; gap: 4px; }
+
+  /* Header compact */
+  #match-header, #classic-header { padding: 8px 12px 6px; }
   .game-name { font-size: 0.95rem; }
+  .best-of   { font-size: 0.65rem; }
+  .partie-info { margin-top: 4px; font-size: 0.72rem; }
+  .match-title .btn-back { left: -32px; font-size: 1rem; }
+
+  /* Score pips smaller */
+  .pip { width: 14px; height: 14px; }
+  .score-block { min-width: 100px; gap: 6px; }
+  .score-label { font-size: 0.75rem; }
+
+  /* Hand cards smaller */
+  .card { --card-h: 80px; }
+  .card-emoji { font-size: 1.5rem; }
+  .card-name  { font-size: 0.58rem; }
+  .hand { gap: 5px; flex-wrap: wrap; }
+
+  /* Bluff arena: keep 6-in-a-row but tighter */
+  .duels { gap: 4px; }
+  .duel-slot { gap: 3px; }
+  .duel-slot .card-emoji { font-size: 1rem; }
+  .duel-slot .card-name  { font-size: 0.5rem; }
+  .slot-number { font-size: 0.6rem; }
+  .duel-result { font-size: 0.6rem; padding: 1px 4px; }
+
+  /* Hint bar compact */
+  #hint-bar, #classic-hint-bar {
+    padding: 8px 12px;
+    gap: 8px;
+    font-size: 0.82rem;
+    min-height: 44px;
+    flex-wrap: wrap;
+  }
+  #hint-icon, #classic-hint-icon { font-size: 1.1rem; }
+  #hint-text, #classic-hint-text { min-width: 0; }
+
+  .btn { padding: 8px 16px; font-size: 0.82rem; }
+
+  /* Victory / mode screens */
   .victory-box { padding: 32px 28px; }
+  .victory-box h1 { font-size: 1.6rem; }
+  .victory-box p  { font-size: 0.95rem; margin-bottom: 24px; }
+  .victory-buttons { gap: 8px; }
+
   .mode-box h1 { font-size: 1.6rem; }
-  .mode-cards { flex-direction: column; align-items: center; }
-  .classic-card-slot { width: 80px; height: 120px; }
-  .classic-card-slot .card { --card-h: 120px; width: 80px; }
+  .mode-subtitle { font-size: 0.95rem; margin-bottom: 24px; }
+  .mode-cards { flex-direction: column; align-items: center; gap: 14px; }
+  .mode-card { width: 220px; padding: 24px 20px 20px; }
+  .mode-title-icon { font-size: 48px; margin-bottom: 8px; }
+
+  /* Classic mode */
+  .classic-card-slot { width: 85px; height: 128px; }
+  .classic-card-slot .card { --card-h: 128px; width: 85px; }
+  .classic-card-slot .card-emoji { font-size: 2rem; }
   .classic-duel { gap: 16px; }
+  .classic-score-num { font-size: 1.6rem; }
+  .classic-score-side { min-width: 80px; }
+
+  /* Bot area compact */
+  #bot-area, #classic-bot-area { padding: 4px 0 0; }
+  .area-label, .arena-label { font-size: 0.6rem; margin-bottom: 2px; }
+}
+
+/* ── Phone ──────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  #game-container { gap: 2px; padding: 0 6px 4px; }
+
+  /* Header ultra-compact */
+  #match-header { padding: 6px 8px 4px; }
+  .game-name { font-size: 0.85rem; }
+  .match-title .btn-back { left: -26px; font-size: 0.9rem; }
+  .score-block { min-width: 70px; gap: 4px; }
+  .score-label { font-size: 0.68rem; }
+  .pip { width: 12px; height: 12px; }
+  .partie-info { margin-top: 2px; font-size: 0.65rem; }
+
+  /* Hand: smaller cards, wrap if needed */
+  .card { --card-h: 68px; }
+  .card-emoji { font-size: 1.3rem; }
+  .card-name  { font-size: 0.5rem; letter-spacing: 0; }
+  .hand { gap: 4px; }
+
+  /* Hand hover/selected: smaller offset for mobile */
+  .hand .card:hover:not(.disabled):not(.selected) {
+    transform: translateY(-6px) scale(1.03);
+  }
+  .card.selected {
+    transform: translateY(-10px) scale(1.05);
+  }
+
+  /* Bluff arena: 3×2 grid on phones */
+  .duels {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    width: 100%;
+  }
+  .duel-slot {
+    width: 100%;
+    max-width: none;
+    gap: 2px;
+  }
+  .slot-card-wrapper { aspect-ratio: 2/3; }
+  .duel-slot .card-emoji { font-size: 0.9rem; }
+  .duel-slot .card-name  { font-size: 0; } /* hide name on small screens */
+  .duel-slot .card-back::after { font-size: 1rem; }
+  .slot-number { font-size: 0.55rem; letter-spacing: .05em; }
+  .duel-result { font-size: 0.55rem; padding: 1px 3px; min-width: 28px; }
+
+  /* Arena less padding */
+  #arena { padding: 2px 0; }
+  .arena-label { display: none; }
+
+  /* Hint bar */
+  #hint-bar, #classic-hint-bar {
+    padding: 6px 10px;
+    gap: 6px;
+    font-size: 0.78rem;
+    min-height: 40px;
+  }
+  #hint-icon, #classic-hint-icon { font-size: 1rem; }
+  .btn { padding: 7px 12px; font-size: 0.78rem; }
+
+  /* Player area tight */
+  #player-area, #classic-player-area { gap: 4px; }
+  .area-label { display: none; }
+
+  /* Classic mode on phone */
+  #classic-container { gap: 4px; padding: 0 8px 4px; }
+  #classic-header { padding: 6px 8px 4px; }
+  .classic-score-num { font-size: 1.4rem; }
+  .classic-score-side { min-width: 60px; gap: 6px; }
+  .classic-card-slot { width: 72px; height: 108px; }
+  .classic-card-slot .card { --card-h: 108px; width: 72px; }
+  .classic-card-slot .card-emoji { font-size: 1.7rem; }
+  .classic-card-slot .card-name  { font-size: 0.6rem; }
+  .classic-duel { gap: 12px; }
+  .classic-vs { font-size: 1.1rem; margin-top: 16px; }
+  .classic-side-label { font-size: 0.65rem; }
+
+  /* Mode selection */
+  .mode-box h1 { font-size: 1.3rem; }
+  .mode-title-icon { font-size: 40px; margin-bottom: 6px; }
+  .mode-subtitle { font-size: 0.85rem; margin-bottom: 18px; }
+  .mode-card { width: 200px; padding: 20px 16px 16px; border-radius: 16px; }
+  .mode-icon { font-size: 2.4rem; }
+  .mode-name { font-size: 1.05rem; }
+  .mode-desc { font-size: 0.7rem; }
+
+  /* Victory */
+  .victory-box { padding: 24px 20px; border-radius: 18px; }
+  .victory-icon { font-size: 52px; margin-bottom: 10px; }
+  .victory-box h1 { font-size: 1.4rem; }
+  .victory-box p  { font-size: 0.85rem; margin-bottom: 20px; }
+  .victory-buttons .btn { padding: 8px 16px; font-size: 0.8rem; }
+}
+
+/* ── Very small phones (SE, etc) ─────────────────────────────────── */
+@media (max-width: 380px) {
+  .card { --card-h: 60px; }
+  .card-emoji { font-size: 1.1rem; }
+  .card-name  { display: none; }
+  .hand { gap: 3px; }
+
+  .duel-slot .card-emoji { font-size: 0.8rem; }
+  .duel-result { font-size: 0.5rem; }
+
+  .classic-card-slot { width: 64px; height: 96px; }
+  .classic-card-slot .card { --card-h: 96px; width: 64px; }
+  .classic-card-slot .card-emoji { font-size: 1.4rem; }
+  .classic-card-slot .card-name  { display: none; }
 }
